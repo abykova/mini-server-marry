@@ -1,2 +1,15 @@
 # mini-server-marry
-MiniServerMerry is a simple Python project. It includes a small server and encryption features, making it both fun and secure.
+MiniServerMerry — это простой проект на Python. Он включает в себя небольшой сервер и функции шифрования
+# Запуск проекта
+1. Установите зависимости:
+```
+pip install -r requirements.txt
+```
+
+2. Запустите сервер:
+
+```
+python main.py
+```
+
+3. Откройте браузер и перейдите по адресу `http://localhost:8080` для проверки работы сервера.
