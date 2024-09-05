@@ -1,8 +1,8 @@
+import ssl
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 from server.encryption import AESCipher
 import os
 import urllib.parse
-
 
 class MyHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -44,13 +44,18 @@ class MyHandler(SimpleHTTPRequestHandler):
             else:
                 self.send_error(400, "Bad Request: ciphertext parameter is missing")
 
-
-def run(server_class=HTTPServer, handler_class=MyHandler, port=8080):
+def run_https(server_class=HTTPServer, handler_class=MyHandler, port=8443):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
-    print(f"Starting httpd server on port {port}")
+
+    # SSL
+    httpd.socket = ssl.wrap_socket(httpd.socket,
+                                   keyfile="key.pem",
+                                   certfile="cert.pem",
+                                   server_side=True)
+
+    print(f"Starting https server on port {port}")
     httpd.serve_forever()
 
-
 if __name__ == "__main__":
-    run()
+    run_https()
