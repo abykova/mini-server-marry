@@ -4,7 +4,10 @@ MiniServerMerry — это простой проект на Python. Он вкл�
 ## Features
 
 - Simple HTTP server with encryption and decryption functionality
-- **NEW**: HTTPS support using SSL certificates for secure connections
+- HTTPS support using SSL certificates for secure connections
+- **NEW**: User authentication system with password encryption (bcrypt)
+- Secure storage of passwords using salted hashes
+
 
 # Запуск проекта
 1. Установите зависимости:
@@ -36,8 +39,21 @@ To decrypt a message:
 https://localhost:8443/decrypt?ciphertext=your_ciphertext
 ```
 
+# Authentication Endpoints
+
+To register a new user:
+```
+https://localhost:8443/register?username=your_username&password=your_password
+```
+
+To log in:
+```
+https://localhost:8443/login?username=your_username&password=your_password
+```
+
 # Dependencies
 
 - Python 3.x
-- cryptography library
+- cryptography library for encryption
+- bcrypt library for password hashing
 - SSL certificates
