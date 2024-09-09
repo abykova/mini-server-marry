@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniServerMerry - Encrypt & Decrypt</title>
+</head>
+<body>
+    <h1>Welcome to MiniServerMerry!</h1>
+
+    <h2>Encrypt a message</h2>
+    <form action="/encrypt" method="get">
+        <label for="message">Message to encrypt:</label>
+        <input type="text" id="message" name="message" required>
+        <button type="submit">Encrypt</button>
+    </form>
+
+    <h2>Decrypt a message</h2>
+    <form action="/decrypt" method="get">
+        <label for="ciphertext">Ciphertext to decrypt:</label>
+        <input type="text" id="ciphertext" name="ciphertext" required>
+        <button type="submit">Decrypt</button>
+    </form>
+
+    <h2>Result:</h2>
+    <p id="result"></p>
+
+</body>
+</html>
