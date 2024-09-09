@@ -8,6 +8,7 @@ from server.auth import AuthManager
 
 class MyHandler(SimpleHTTPRequestHandler):
     auth_manager = AuthManager()
+    cipher = AESCipher(os.urandom(32))
     
     def __init__(self, *args, **kwargs):
         self.cipher = AESCipher(os.urandom(32))
@@ -81,6 +82,44 @@ class MyHandler(SimpleHTTPRequestHandler):
                 self.wfile.write(message.encode())
             else:
                 self.send_error(400, "Username and password required")
+
+    def do_GET(self):
+            if self.path == '/':
+                self.send_response(200)
+                self.send_header("Content-type", "text/html")
+                self.end_headers()
+                with open("static/index.html", "rb") as file:
+                    self.wfile.write(file.read())
+            elif self.path.startswith('/encrypt'):
+                query = urllib.parse.urlparse(self.path).query
+                params = urllib.parse.parse_qs(query)
+                message = params.get('message', [None])[0]
+    
+                if message:
+                    encrypted_message = self.cipher.encrypt(message)
+                    self.send_response(200)
+                    self.send_header("Content-type", "text/plain")
+                    self.end_headers()
+                    self.wfile.write(encrypted_message.hex().encode())
+                else:
+                    self.send_error(400, "Message parameter is missing")
+    
+            elif self.path.startswith('/decrypt'):
+                query = urllib.parse.urlparse(self.path).query
+                params = urllib.parse.parse_qs(query)
+                ciphertext = params.get('ciphertext', [None])[0]
+    
+                if ciphertext:
+                    try:
+                        decrypted_message = self.cipher.decrypt(bytes.fromhex(ciphertext))
+                        self.send_response(200)
+                        self.send_header("Content-type", "text/plain")
+                        self.end_headers()
+                        self.wfile.write(decrypted_message.encode())
+                    except Exception as e:
+                        self.send_error(400, f"Decryption failed: {str(e)}")
+                else:
+                    self.send_error(400, "Ciphertext parameter is missing")
 
 def run_https(server_class=HTTPServer, handler_class=MyHandler, port=8443):
     server_address = ('', port)
