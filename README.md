@@ -7,7 +7,8 @@ MiniServerMerry — это простой проект на Python. Он вкл�
 - HTTPS support using SSL certificates for secure connections
 - User authentication system with password encryption (bcrypt)
 - Secure storage of passwords using salted hashes
-- **NEW**: Web interface for encrypting and decrypting text
+- Web interface for encrypting and decrypting text
+- **NEW**: Logging of all HTTP requests and encryption/decryption operations
 
 
 # Запуск проекта
@@ -51,6 +52,9 @@ To log in:
 ```
 https://localhost:8443/login?username=your_username&password=your_password
 ```
+
+# Logging
+- All HTTP requests and encryption/decryption operations are logged in the server.log file
 
 # Web Interface for Encryption/Decryption
 - To encrypt a message, enter the text in the "Encrypt a message" form and submit.
