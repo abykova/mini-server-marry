@@ -5,6 +5,11 @@ import os
 import urllib.parse
 from urllib.parse import parse_qs, urlparse
 from server.auth import AuthManager
+import logging
+
+# Настройка логирования
+logging.basicConfig(filename='server.log', level=logging.INFO, 
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 class MyHandler(SimpleHTTPRequestHandler):
     auth_manager = AuthManager()
@@ -15,6 +20,8 @@ class MyHandler(SimpleHTTPRequestHandler):
         super().__init__(*args, **kwargs)
 
     def do_GET(self):
+        logging.info(f"Received GET request: {self.path}")
+        
         # Обработка главной страницы
         if self.path == '/':
             self.send_response(200)
@@ -65,14 +72,17 @@ class MyHandler(SimpleHTTPRequestHandler):
 
         if ciphertext:
             try:
+                logging.info(f"Ciphertext decrypted: {ciphertext}")
                 decrypted_message = self.cipher.decrypt(bytes.fromhex(ciphertext))
                 self.send_response(200)
                 self.send_header("Content-type", "text/plain")
                 self.end_headers()
                 self.wfile.write(decrypted_message.encode())
             except Exception as e:
+                logging.error(f"Decryption failed: {str(e)}")
                 self.send_error(400, f"Decryption failed: {str(e)}")
         else:
+            logging.error("Decryption failed: Ciphertext parameter is missing")
             self.send_error(400, "Bad Request: ciphertext parameter is missing")
 
     def handle_register(self):
@@ -83,11 +93,13 @@ class MyHandler(SimpleHTTPRequestHandler):
 
         if username and password:
             success, message = self.auth_manager.register(username, password)
+            logging.info(f"User registration attempt: {username} - {'Success' if success else 'Failure'}")
             self.send_response(200 if success else 400)
             self.send_header("Content-type", "text/plain")
             self.end_headers()
             self.wfile.write(message.encode())
         else:
+            logging.error("Registration failed: Username and password required")
             self.send_error(400, "Username and password required")
 
     def handle_login(self):
@@ -98,11 +110,13 @@ class MyHandler(SimpleHTTPRequestHandler):
 
         if username and password:
             success, message = self.auth_manager.login(username, password)
+            logging.info(f"User login attempt: {username} - {'Success' if success else 'Failure'}")
             self.send_response(200 if success else 400)
             self.send_header("Content-type", "text/plain")
             self.end_headers()
             self.wfile.write(message.encode())
         else:
+            logging.error("Login failed: Username and password required")
             self.send_error(400, "Username and password required")
 
 def run_https(server_class=HTTPServer, handler_class=MyHandler, port=8443):
@@ -116,6 +130,7 @@ def run_https(server_class=HTTPServer, handler_class=MyHandler, port=8443):
                                    certfile="cert.pem",
                                    server_side=True)
 
+    logging.info(f"Starting HTTPS server on port {port}")
     print(f"Starting HTTPS server on port {port}")
     httpd.serve_forever()
 
